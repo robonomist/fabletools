@@ -21,6 +21,8 @@ model <- function(.data, ...){
 #' @rdname model
 #' 
 #' @param .safely If a model encounters an error, rather than aborting the process a [NULL model][null_model()] will be returned instead. This allows for an error to occur when computing many models, without losing the results of the successful models.
+#'
+#' @param .parallelly By default, if the [future](https://cran.r-project.org/package=future) package is loaded, the models will be estimated parallelly according to the specified [`future::plan()`] plan. If `.parallelly = FALSE`, the models will be computed sequentially.
 #' 
 #' @section Parallel:
 #' 
@@ -61,7 +63,7 @@ model <- function(.data, ...){
 #' }
 #' 
 #' @export
-model.tbl_ts <- function(.data, ..., .safely = TRUE){
+model.tbl_ts <- function(.data, ..., .safely = TRUE, .parallelly = is_attached("package:future")){
   nm <- map(enexprs(...), expr_text)
   models <- dots_list(...)
   
@@ -99,7 +101,7 @@ Check that specified model(s) are model definitions.", nm[which(!is_mdl)[1]]))
     out
   }
   
-  if(is_attached("package:future")){
+  if(.parallelly){
     require_package("future.apply")
     eval_models <- function(models, lst_data){
       out <- future.apply::future_mapply(

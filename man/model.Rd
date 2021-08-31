@@ -7,7 +7,7 @@
 \usage{
 model(.data, ...)
 
-\method{model}{tbl_ts}(.data, ..., .safely = TRUE)
+\method{model}{tbl_ts}(.data, ..., .safely = TRUE, .parallelly = is_attached("package:future"))
 }
 \arguments{
 \item{.data}{A data structure suitable for the models (such as a \code{tsibble})}
@@ -16,6 +16,8 @@ model(.data, ...)
 same response variable.}
 
 \item{.safely}{If a model encounters an error, rather than aborting the process a \link[=null_model]{NULL model} will be returned instead. This allows for an error to occur when computing many models, without losing the results of the successful models.}
+
+\item{.parallelly}{By default, if the \href{https://cran.r-project.org/package=future}{future} package is loaded, the models will be estimated parallelly according to the specified \code{\link[future:plan]{future::plan()}} plan. If \code{.parallelly = FALSE}, the models will be computed sequentially.}
 }
 \description{
 Trains specified model definition(s) to a dataset. This function will
